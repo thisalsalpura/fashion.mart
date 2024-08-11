@@ -116,7 +116,7 @@ if (isset($_SESSION["au"])) {
                                                 $image_num = $image_rs->num_rows;
 
                                                 if ($image_num == 0) {
-                                                    $profile_img_data = $profile_img_rs->fetch_assoc();
+                                                    $profile_img_data = $image_rs->fetch_assoc();
                                                 ?>
                                                     <div class="image-mup-sq">
                                                         <img src="./images/empty-box.png" alt="user-img">

@@ -37,12 +37,12 @@ if (isset($_POST["email"]) && isset($_POST["name"])) {
                 $mail->IsSMTP();
                 $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
-                $mail->Username = 'thisaloktaloop@gmail.com';
-                $mail->Password = 'lxboiehovtwsigvc';
+                $mail->Username = '------';
+                $mail->Password = '------';
                 $mail->SMTPSecure = 'ssl';
                 $mail->Port = 465;
-                $mail->setFrom('thisaloktaloop@gmail.com', 'Admin Verification');
-                $mail->addReplyTo('thisaloktaloop@gmail.com', 'Admin Verification');
+                $mail->setFrom('------', 'Admin Verification');
+                $mail->addReplyTo('------', 'Admin Verification');
                 $mail->addAddress($umail);
                 $mail->isHTML(true);
                 $mail->Subject = 'FASHION.MART Admin Sign In Verification Code For Add New Category.';

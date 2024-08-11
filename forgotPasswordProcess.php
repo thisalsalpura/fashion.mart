@@ -28,12 +28,12 @@ if (isset($_GET["e"])) {
             $mail->IsSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
-            $mail->Username = 'thisaloktaloop@gmail.com';
-            $mail->Password = 'lxboiehovtwsigvc';
+            $mail->Username = '------';
+            $mail->Password = '------';
             $mail->SMTPSecure = 'ssl';
             $mail->Port = 465;
-            $mail->setFrom('thisaloktaloop@gmail.com', 'Reset Password');
-            $mail->addReplyTo('thisaloktaloop@gmail.com', 'Reset Password');
+            $mail->setFrom('------', 'Reset Password');
+            $mail->addReplyTo('------', 'Reset Password');
             $mail->addAddress($email);
             $mail->isHTML(true);
             $mail->Subject = 'FASHION.MART Forgot Password Verification Code.';
