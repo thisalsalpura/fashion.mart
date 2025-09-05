@@ -23,7 +23,9 @@ $invoice_num = $invoice_rs->num_rows;
                 <br><br>
             </div>
             <div class="users-load-sec">
-                <?php if ($invoice_num > 0) : ?>
+                <?php
+                $found = false;
+                if ($invoice_num > 0) : ?>
                     <section class="products-mup">
                         <div class="box-container-mup">
                             <?php while ($invoice_data = $invoice_rs->fetch_assoc()) : ?>
@@ -33,6 +35,7 @@ $invoice_num = $invoice_rs->num_rows;
                                 $sold_date_str = $sold_date_obj->format("Y-m-d");
 
                                 if ($sold_date_str == $date_str) :
+                                    $found = true;
                                 ?>
                                     <div class="box-mup">
                                         <div class="num">
@@ -114,12 +117,14 @@ $invoice_num = $invoice_rs->num_rows;
                 <?php else : ?>
                     <p style="text-align: center; font-size: 28px; font-weight: bold; color: white;">No product found.</p>
                 <?php endif; ?>
+                <?php if (!$found) : ?>
+                    <p style="text-align: center; font-size: 28px; font-weight: bold; color: white;">No product found.</p>
+                <?php endif; ?>
                 <br><br>
                 <a href="adminPanel.php">
                     <p style="text-align: center; margin-left: auto; margin-right: auto; font-size: 28px; font-weight: bold; color: black; background: white; padding: 10px; border: 2px solid white !important; border-radius: 5px; height: auto; width: 50%;">CLEAR.</p>
                 </a>
-                <br>
-                <br>
+                <br><br>
             </div>
         </div>
     </div>

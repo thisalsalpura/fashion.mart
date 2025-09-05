@@ -7,44 +7,33 @@ include "connection.php";
 ?>
 
 <div class="product-page">
-
     <div class="manageUsers-page">
-
         <div class="my-selling-page">
-
             <div class="ad-search-content">
-
                 <h1 class="ad-search-h1">SELLING HISTORY</h1>
-                <br>
-                <br>
+                <br><br>
                 <hr class="hr">
-                <br>
-                <br>
-
+                <br><br>
             </div>
 
             <div class="users-load-sec">
-
                 <?php
-
                 if (isset($_GET["f"]) && isset($_GET["t"])) {
 
                     $from = $_GET["f"];
                     $to = $_GET["t"];
 
+                    $found = false;
+                    $isEmpty = false;
+
                     if (empty($from) && empty($to)) {
                 ?>
-                        <br>
-                        <br>
+                        <section class="products-mup">
+                            <div class="box-container-mup">
+                            </div>
+                        </section>
                         <?php
-                        echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>Please select a date.</p>");
-                        echo ("<br/>");
-                        echo ("<br/>");
-                        echo ('<a href="adminPanel.php"><p style="text-align: center; margin-left: auto; margin-right: auto; font-size: 28px; font-weight: bold; color: black; background: white; padding: 10px; border: 2px solid white !important; border-radius: 5px; height: auto; width: 50%;">CLEAR.</p></a>');
-                        ?>
-                        <br>
-                        <br>
-                        <?php
+                        $isEmpty = true;
                     } else {
                         $invoice_rs = Database::search("SELECT *, invoice.product_id AS invoice_product_id, invoice.qty AS invoice_qty, invoice.status AS invoice_status, invoice.user_email AS invoice_user_email FROM `invoice`");
                         $invoice_num = $invoice_rs->num_rows;
@@ -52,11 +41,8 @@ include "connection.php";
                         if ($invoice_num > 0) {
                         ?>
                             <section class="products-mup">
-
                                 <div class="box-container-mup">
-
                                     <?php
-
                                     for ($x = 0; $x < $invoice_num; $x++) {
                                         $invoice_data = $invoice_rs->fetch_assoc();
 
@@ -67,9 +53,8 @@ include "connection.php";
                                         $t = $date[1];
 
                                         if (!empty($from) && empty($to)) {
-
                                             if ($from <= $d) {
-
+                                                $found = true;
                                     ?>
                                                 <div class="box-mup">
 
@@ -146,11 +131,10 @@ include "connection.php";
                                                     </div>
                                                 </div>
                                             <?php
-
                                             }
                                         } else if (empty($from) && !empty($to)) {
                                             if ($to >= $d) {
-
+                                                $found = true;
                                             ?>
                                                 <div class="box-mup">
 
@@ -227,11 +211,10 @@ include "connection.php";
                                                     </div>
                                                 </div>
                                             <?php
-
                                             }
                                         } else if (!empty($from) && !empty($to)) {
                                             if ($from <= $d && $to >= $d) {
-
+                                                $found = true;
                                             ?>
                                                 <div class="box-mup">
 
@@ -308,78 +291,36 @@ include "connection.php";
                                                     </div>
                                                 </div>
                                     <?php
-
-                                            }
-                                        } else if (!empty($from) && empty($to)) {
-                                            if ($from >= $d) {
-                                                echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>No product found.</p>");
-                                            }
-                                        } else if (empty($from) && !empty($to)) {
-                                            if ($to <= $d) {
-                                                echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>No product found.</p>");
-                                            }
-                                        } else if (!empty($from) && !empty($to)) {
-                                            if ($from >= $d && $to <= $d) {
-                                                echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>No product found.</p>");
                                             }
                                         }
                                     }
-
                                     ?>
-
                                 </div>
-
                             </section>
-
-                            <br>
-                            <br>
-
-                        <?php
-                            echo ('<a href="adminPanel.php">
-                                <p style="text-align: center; margin-left: auto; margin-right: auto; font-size: 28px; font-weight: bold; color: black; background: white; padding: 10px; border: 2px solid white !important; border-radius: 5px; height: auto; width: 50%;">CLEAR.</p>
-                            </a>');
-                            echo ("<br />");
-                            echo ("<br />");
+                <?php
                         } else {
-                        ?>
-                            <br>
-                            <br>
-                            <?php
                             echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>No product found.</p>");
-                            echo ("<br/>");
-                            echo ("<br/>");
-                            echo ('<a href="adminPanel.php"><p style="text-align: center; margin-left: auto; margin-right: auto; font-size: 28px; font-weight: bold; color: black; background: white; padding: 10px; border: 2px solid white !important; border-radius: 5px; height: auto; width: 50%;">CLEAR.</p></a>');
-                            ?>
-                            <br>
-                            <br>
-                        <?php
                         }
 
-                        ?>
+                        if (!$found) {
+                            echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>No product found.</p>");
+                        }
+                    }
 
-                    <?php
+                    if ($isEmpty) {
+                        echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>Please select a date.</p>");
                     }
                 } else {
-                    ?>
-                    <br>
-                    <br>
-                    <?php
                     echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>Something went wrong.</p>");
-                    echo ("<br/>");
-                    echo ("<br/>");
-                    echo ('<a href="adminPanel.php"><p style="text-align: center; margin-left: auto; margin-right: auto; font-size: 28px; font-weight: bold; color: black; background: white; padding: 10px; border: 2px solid white !important; border-radius: 5px; height: auto; width: 50%;">CLEAR.</p></a>');
-                    ?>
-                    <br>
-                    <br>
-                <?php
                 }
-
                 ?>
 
+                <br><br>
+                <a href="adminPanel.php">
+                    <p style="text-align: center; margin-left: auto; margin-right: auto; font-size: 28px; font-weight: bold; color: black; background: white; padding: 10px; border: 2px solid white !important; border-radius: 5px; height: auto; width: 50%;">CLEAR.</p>
+                </a>
+                <br><br>
             </div>
-
         </div>
-
     </div>
-
 </div>
