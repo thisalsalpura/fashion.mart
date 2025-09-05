@@ -28,7 +28,7 @@ if (isset($_SESSION["u"])) {
     Database::iud("INSERT INTO `invoice` (`order_id`,`date`,`total`,`qty`,`status`,`product_id`,`user_email`) 
     VALUES ('" . $order_id . "','" . $date . "','" . $amount . "','" . $qty . "','0','" . $pid . "','" . $mail . "')");
 
-    Database::iud("INSERT INTO `recent` (`order_id`,`date`,`total`,`qty`,`status`,`product_id`,`user_email`) 
+    Database::iud("INSERT INTO `recent` (`r_id`,`date`,`total`,`qty`,`status`,`product_id`,`user_email`) 
     VALUES ('" . $order_id . "','" . $date . "','" . $amount . "','" . $qty . "','0','" . $pid . "','" . $mail . "')");
 
     echo ("success");

@@ -2541,6 +2541,10 @@ function searchInvoice() {
 
 // js for find selling with a date in mySelling.php & adminPanel.php
 function findSellings() {
+
+  document.getElementById("searchtxt").value = "";
+  document.getElementById("viewAreaSH").innerHTML = "";
+
   var from = document.getElementById("from").value;
   var to = document.getElementById("to").value;
 

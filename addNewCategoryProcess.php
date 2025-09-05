@@ -10,6 +10,13 @@ require "Exception.php";
 
 use PHPMailer\PHPMailer\PHPMailer;
 
+require __DIR__ . '/vendor/autoload.php';
+
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__, '.env.local');
+$dotenv->load();
+
 if (isset($_POST["email"]) && isset($_POST["name"])) {
 
     $cname = $_POST["name"];
@@ -37,12 +44,12 @@ if (isset($_POST["email"]) && isset($_POST["name"])) {
                 $mail->IsSMTP();
                 $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
-                $mail->Username = '------';
-                $mail->Password = '------';
+                $mail->Username = $_ENV['SENDER_EMAIL'];
+                $mail->Password = $_ENV['SENDER_EMAIL_APP_PASSWORD'];
                 $mail->SMTPSecure = 'ssl';
                 $mail->Port = 465;
-                $mail->setFrom('------', 'Admin Verification');
-                $mail->addReplyTo('------', 'Admin Verification');
+                $mail->setFrom('thisaloktaloop@gmail.com', 'Admin Verification');
+                $mail->addReplyTo('thisaloktaloop@gmail.com', 'Admin Verification');
                 $mail->addAddress($umail);
                 $mail->isHTML(true);
                 $mail->Subject = 'FASHION.MART Admin Sign In Verification Code For Add New Category.';

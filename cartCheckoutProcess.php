@@ -4,6 +4,13 @@ session_start();
 
 include "connection.php";
 
+require __DIR__ . '/vendor/autoload.php';
+
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__, '.env.local');
+$dotenv->load();
+
 if (isset($_SESSION["u"])) {
 
     $cart_ids = $_GET["cart_ids"];
@@ -36,8 +43,8 @@ if (isset($_SESSION["u"])) {
         $uaddress = $address;
         $city = $district_data["city_name"];
 
-        $merchant_id = "------";
-        $merchant_secret = "------";
+        $merchant_id = $_ENV['PAYHERE_MERCHANT_ID'];
+        $merchant_secret = $_ENV['PAYHERE_MERCHANT_SECRET'];
         $currency = "LKR";
 
         $hash = strtoupper(

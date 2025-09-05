@@ -4,29 +4,31 @@ session_start();
 
 include "connection.php";
 
-if (isset($_GET["f"]) && isset($_GET["t"])) {
+$notselect = false;
+$found = false;
+$notissue = false;
 
-    $from = $_GET["f"];
-    $to = $_GET["t"];
-
-    if (empty($from) && empty($to)) {
-        echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>Please select a date.</p>");
 ?>
-        <br>
-        <br>
+
+<section class="products-mup">
+
+    <div class="box-container-mup">
+
         <?php
-    } else {
-        $invoice_rs = Database::search("SELECT *, invoice.product_id AS invoice_product_id, invoice.qty AS invoice_qty, invoice.status AS invoice_status, invoice.user_email AS invoice_user_email FROM `invoice` 
+
+        if (isset($_GET["f"]) && isset($_GET["t"])) {
+
+            $from = $_GET["f"];
+            $to = $_GET["t"];
+
+            if (empty($from) && empty($to)) {
+                $notselect = true;
+            } else {
+                $invoice_rs = Database::search("SELECT *, invoice.product_id AS invoice_product_id, invoice.qty AS invoice_qty, invoice.status AS invoice_status, invoice.user_email AS invoice_user_email FROM `invoice` 
         INNER JOIN `product` ON invoice.product_id = product.id WHERE `product`.`user_email` = '" . $_SESSION["u"]["email"] . "'");
-        $invoice_num = $invoice_rs->num_rows;
+                $invoice_num = $invoice_rs->num_rows;
 
-        if ($invoice_num > 0) {
-        ?>
-            <section class="products-mup">
-
-                <div class="box-container-mup">
-
-                    <?php
+                if ($invoice_num > 0) {
 
                     for ($x = 0; $x < $invoice_num; $x++) {
                         $invoice_data = $invoice_rs->fetch_assoc();
@@ -38,10 +40,8 @@ if (isset($_GET["f"]) && isset($_GET["t"])) {
                         $t = $date[1];
 
                         if (!empty($from) && empty($to)) {
-
                             if ($from <= $d) {
-
-                    ?>
+        ?>
                                 <div class="box-mup">
 
                                     <div class="num">
@@ -72,6 +72,8 @@ if (isset($_GET["f"]) && isset($_GET["t"])) {
                                     $product_rs = Database::search("SELECT * FROM `product` WHERE `id` = '" . $invoice_data["invoice_product_id"] . "'");
                                     $product_data = $product_rs->fetch_assoc();
 
+                                    $found = true;
+
                                     ?>
 
                                     <div class="content-mup">
@@ -91,11 +93,9 @@ if (isset($_GET["f"]) && isset($_GET["t"])) {
                                     </div>
                                 </div>
                             <?php
-
                             }
                         } else if (empty($from) && !empty($to)) {
                             if ($to >= $d) {
-
                             ?>
                                 <div class="box-mup">
 
@@ -126,6 +126,8 @@ if (isset($_GET["f"]) && isset($_GET["t"])) {
 
                                     $product_rs = Database::search("SELECT * FROM `product` WHERE `id` = '" . $invoice_data["invoice_product_id"] . "'");
                                     $product_data = $product_rs->fetch_assoc();
+
+                                    $found = true;
 
                                     ?>
 
@@ -146,11 +148,9 @@ if (isset($_GET["f"]) && isset($_GET["t"])) {
                                     </div>
                                 </div>
                             <?php
-
                             }
                         } else if (!empty($from) && !empty($to)) {
                             if ($from <= $d && $to >= $d) {
-
                             ?>
                                 <div class="box-mup">
 
@@ -182,6 +182,8 @@ if (isset($_GET["f"]) && isset($_GET["t"])) {
                                     $product_rs = Database::search("SELECT * FROM `product` WHERE `id` = '" . $invoice_data["invoice_product_id"] . "'");
                                     $product_data = $product_rs->fetch_assoc();
 
+                                    $found = true;
+
                                     ?>
 
                                     <div class="content-mup">
@@ -200,39 +202,47 @@ if (isset($_GET["f"]) && isset($_GET["t"])) {
 
                                     </div>
                                 </div>
-                    <?php
-
+        <?php
                             }
                         }
                     }
-
-                    ?>
-
-                </div>
-
-            </section>
-
-            <br>
-            <br>
-        <?php
+                }
+            }
         } else {
-            echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>No product found.</p>");
-        ?>
-            <br>
-            <br>
-        <?php
+            $notissue = true;
         }
 
         ?>
 
-    <?php
-    }
-} else {
-    echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>Something went wrong.</p>");
-    ?>
+    </div>
+
+</section>
+
+<?php
+
+if ($notselect) {
+    echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>Please select a date.</p>");
+?>
     <br>
     <br>
 <?php
+    return;
 }
 
+if (!$found) {
+    echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>No product found.</p>");
 ?>
+    <br>
+    <br>
+<?php
+    return;
+}
+
+if ($notissue) {
+    echo ("<p style='text-align: center; font-size: 28px; font-weight: bold; color: white;'>Something went wrong.</p>");
+?>
+    <br>
+    <br>
+<?php
+    return;
+}

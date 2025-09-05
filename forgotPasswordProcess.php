@@ -8,6 +8,13 @@ include "Exception.php";
 
 use PHPMailer\PHPMailer\PHPMailer;
 
+require __DIR__ . '/vendor/autoload.php';
+
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__, '.env.local');
+$dotenv->load();
+
 if (isset($_GET["e"])) {
 
     $email = $_GET["e"];
@@ -28,12 +35,12 @@ if (isset($_GET["e"])) {
             $mail->IsSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
-            $mail->Username = '------';
-            $mail->Password = '------';
+            $mail->Username = $_ENV['SENDER_EMAIL'];
+            $mail->Password = $_ENV['SENDER_EMAIL_APP_PASSWORD'];
             $mail->SMTPSecure = 'ssl';
             $mail->Port = 465;
-            $mail->setFrom('------', 'Reset Password');
-            $mail->addReplyTo('------', 'Reset Password');
+            $mail->setFrom('thisaloktaloop@gmail.com', 'Reset Password');
+            $mail->addReplyTo('thisaloktaloop@gmail.com', 'Reset Password');
             $mail->addAddress($email);
             $mail->isHTML(true);
             $mail->Subject = 'FASHION.MART Forgot Password Verification Code.';
