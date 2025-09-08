@@ -127,67 +127,91 @@ include "connection.php";
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr class="td-border">
-                                            <td class="i-id br"><?php echo $invoice_data["invoice_id"]; ?></td>
-                                            <td class="br bl i-pr-tu">
-                                                <span class="i-uid"><?php echo $oid; ?></span>
-                                                <br /><br />
+                                        <?php
+
+                                        $invoice_rs2 = Database::search("SELECT * FROM `invoice` WHERE `order_id` = '" . $oid . "'");
+                                        $invoice_num2 = $invoice_rs2->num_rows;
+
+                                        for ($x = 0; $x < $invoice_num2; $x++) {
+                                            $invoice_row_data = $invoice_rs2->fetch_assoc();
+                                        ?>
+                                            <tr class="td-border">
+                                                <td class="i-id br"><?php echo $x + 1 ?></td>
+                                                <td class="br bl i-pr-tu">
+                                                    <span class="i-uid"><?php echo $oid; ?></span>
+                                                    <br /><br />
+
+                                                    <?php
+
+                                                    $product_rs = Database::search("SELECT * FROM `product` WHERE `id` = '" . $invoice_row_data["product_id"] . "'");
+                                                    $product_data = $product_rs->fetch_assoc();
+
+                                                    ?>
+
+                                                    <span class="i-title"><?php echo $product_data["title"]; ?></span>
+                                                </td>
+                                                <td class="i-uprice br bl">Rs. <?php echo $product_data["price"]; ?> .00</td>
+                                                <td class="i-qty br bl"><?php echo $invoice_row_data["qty"]; ?></td>
 
                                                 <?php
 
-                                                $product_rs = Database::search("SELECT * FROM `product` WHERE `id` = '" . $invoice_data["product_id"] . "'");
-                                                $product_data = $product_rs->fetch_assoc();
+                                                $row_total = (int)$product_data["price"] * (int)$invoice_row_data["qty"];
 
                                                 ?>
 
-                                                <span class="i-title"><?php echo $product_data["title"]; ?></span>
-                                            </td>
-                                            <td class="i-uprice br bl">Rs. <?php echo $product_data["price"]; ?> .00</td>
-                                            <td class="i-qty br bl"><?php echo $invoice_data["qty"]; ?></td>
+                                                <td class="i-total bl">Rs. <?php echo $row_total; ?> .00</td>
+                                            </tr>
+                                        <?php
+                                        }
 
-                                            <?php
-
-                                            $row_total = (int)$product_data["price"] * (int)$invoice_data["qty"];
-
-                                            ?>
-
-                                            <td class="i-total bl">Rs. <?php echo $row_total; ?> .00</td>
-                                        </tr>
+                                        ?>
                                     </tbody>
                                     <tfoot>
+                                        <?php
+                                        $city_rs = Database::search("SELECT * FROM  `city` WHERE `city_id` = '" . $address_data["city_city_id"] . "'");
+                                        $city_data = $city_rs->fetch_assoc();
+                                        $district_id = $city_data["district_district_id"];
+                                        ?>
                                         <tr>
-
                                             <?php
+                                            $invoice_rs3 = Database::search("SELECT * FROM `invoice` WHERE `order_id` = '" . $oid . "'");
+                                            $invoice_num3 = $invoice_rs3->num_rows;
 
-                                            $city_rs = Database::search("SELECT * FROM  `city` WHERE `city_id` = '" . $address_data["city_city_id"] . "'");
-                                            $city_data = $city_rs->fetch_assoc();
+                                            $sub_total = 0;
+                                            $delivery_fee = 0;
 
-                                            $delivery = 0;
+                                            for ($x = 0; $x < $invoice_num3; $x++) {
+                                                $invoice_row_data2 = $invoice_rs3->fetch_assoc();
 
-                                            if ($city_data["district_district_id"] == 1) {
-                                                $delivery = $product_data["delivery_fee_colombo"];
-                                            } else {
-                                                $delivery = $product_data["delivery_fee_other"];
+                                                $product_rs2 = Database::search("SELECT * FROM `product` WHERE `id` = '" . $invoice_row_data2["product_id"] . "'");
+                                                $product_data2 = $product_rs2->fetch_assoc();
+
+                                                $sub_total += (int)$product_data2["price"] * (int)$invoice_row_data2["qty"];
+
+                                                $delivery = 0;
+
+                                                if ($district_id == 1) {
+                                                    $delivery = $product_data2["delivery_fee_colombo"];
+                                                } else {
+                                                    $delivery = $product_data2["delivery_fee_other"];
+                                                }
+
+                                                $delivery_fee += (int)$delivery;
                                             }
-
-                                            $t = $invoice_data["total"];
-                                            $g = $t - $delivery;
-
                                             ?>
-
                                             <td colspan="3"></td>
                                             <td class="tf-txt tb">SUBTOTAL</td>
-                                            <td class="tf-detai tb2 tbr">Rs. <?php echo $g; ?> .00</td>
+                                            <td class="tf-detai tb2 tbr">Rs. <?php echo $sub_total; ?> .00</td>
                                         </tr>
                                         <tr>
                                             <td colspan="3"></td>
                                             <td class="tf-txt tb">DELIVERY FEE</td>
-                                            <td class="tf-detai tb2 tbr">Rs. <?php echo $delivery; ?> .00</td>
+                                            <td class="tf-detai tb2 tbr">Rs. <?php echo $delivery_fee; ?> .00</td>
                                         </tr>
                                         <tr>
                                             <td colspan="3"></td>
                                             <td class="tf-txt">GRAND TOTAL</td>
-                                            <td class="tf-detai tb2 tbr">Rs. <?php echo $t; ?> .00</td>
+                                            <td class="tf-detai tb2 tbr">Rs. <?php echo $sub_total + $delivery_fee; ?> .00</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -311,67 +335,91 @@ include "connection.php";
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="td-border">
-                                        <td class="i-id br"><?php echo $invoice_data["invoice_id"]; ?></td>
-                                        <td class="br bl i-pr-tu">
-                                            <span class="i-uid"><?php echo $oid; ?></span>
-                                            <br /><br />
+                                    <?php
+
+                                    $invoice_rs2 = Database::search("SELECT * FROM `invoice` WHERE `order_id` = '" . $oid . "'");
+                                    $invoice_num2 = $invoice_rs2->num_rows;
+
+                                    for ($x = 0; $x < $invoice_num2; $x++) {
+                                        $invoice_row_data = $invoice_rs2->fetch_assoc();
+                                    ?>
+                                        <tr class="td-border">
+                                            <td class="i-id br"><?php echo $x + 1 ?></td>
+                                            <td class="br bl i-pr-tu">
+                                                <span class="i-uid"><?php echo $oid; ?></span>
+                                                <br /><br />
+
+                                                <?php
+
+                                                $product_rs = Database::search("SELECT * FROM `product` WHERE `id` = '" . $invoice_row_data["product_id"] . "'");
+                                                $product_data = $product_rs->fetch_assoc();
+
+                                                ?>
+
+                                                <span class="i-title"><?php echo $product_data["title"]; ?></span>
+                                            </td>
+                                            <td class="i-uprice br bl">Rs. <?php echo $product_data["price"]; ?> .00</td>
+                                            <td class="i-qty br bl"><?php echo $invoice_row_data["qty"]; ?></td>
 
                                             <?php
 
-                                            $product_rs = Database::search("SELECT * FROM `product` WHERE `id` = '" . $invoice_data["product_id"] . "'");
-                                            $product_data = $product_rs->fetch_assoc();
+                                            $row_total = (int)$product_data["price"] * (int)$invoice_row_data["qty"];
 
                                             ?>
 
-                                            <span class="i-title"><?php echo $product_data["title"]; ?></span>
-                                        </td>
-                                        <td class="i-uprice br bl">Rs. <?php echo $product_data["price"]; ?> .00</td>
-                                        <td class="i-qty br bl"><?php echo $invoice_data["qty"]; ?></td>
+                                            <td class="i-total bl">Rs. <?php echo $row_total; ?> .00</td>
+                                        </tr>
+                                    <?php
+                                    }
 
-                                        <?php
-
-                                        $row_total = (int)$product_data["price"] * (int)$invoice_data["qty"];
-
-                                        ?>
-
-                                        <td class="i-total bl">Rs. <?php echo $row_total; ?> .00</td>
-                                    </tr>
+                                    ?>
                                 </tbody>
                                 <tfoot>
+                                    <?php
+                                    $city_rs = Database::search("SELECT * FROM  `city` WHERE `city_id` = '" . $address_data["city_city_id"] . "'");
+                                    $city_data = $city_rs->fetch_assoc();
+                                    $district_id = $city_data["district_district_id"];
+                                    ?>
                                     <tr>
-
                                         <?php
+                                        $invoice_rs3 = Database::search("SELECT * FROM `invoice` WHERE `order_id` = '" . $oid . "'");
+                                        $invoice_num3 = $invoice_rs3->num_rows;
 
-                                        $city_rs = Database::search("SELECT * FROM  `city` WHERE `city_id` = '" . $address_data["city_city_id"] . "'");
-                                        $city_data = $city_rs->fetch_assoc();
+                                        $sub_total = 0;
+                                        $delivery_fee = 0;
 
-                                        $delivery = 0;
+                                        for ($x = 0; $x < $invoice_num3; $x++) {
+                                            $invoice_row_data2 = $invoice_rs3->fetch_assoc();
 
-                                        if ($city_data["district_district_id"] == 1) {
-                                            $delivery = $product_data["delivery_fee_colombo"];
-                                        } else {
-                                            $delivery = $product_data["delivery_fee_other"];
+                                            $product_rs2 = Database::search("SELECT * FROM `product` WHERE `id` = '" . $invoice_row_data2["product_id"] . "'");
+                                            $product_data2 = $product_rs2->fetch_assoc();
+
+                                            $sub_total += (int)$product_data2["price"] * (int)$invoice_row_data2["qty"];
+
+                                            $delivery = 0;
+
+                                            if ($district_id == 1) {
+                                                $delivery = $product_data2["delivery_fee_colombo"];
+                                            } else {
+                                                $delivery = $product_data2["delivery_fee_other"];
+                                            }
+
+                                            $delivery_fee += (int)$delivery;
                                         }
-
-                                        $t = $invoice_data["total"];
-                                        $g = $t - $delivery;
-
                                         ?>
-
                                         <td colspan="3"></td>
                                         <td class="tf-txt tb">SUBTOTAL</td>
-                                        <td class="tf-detai tb2 tbr">Rs. <?php echo $g; ?> .00</td>
+                                        <td class="tf-detai tb2 tbr">Rs. <?php echo $sub_total; ?> .00</td>
                                     </tr>
                                     <tr>
                                         <td colspan="3"></td>
                                         <td class="tf-txt tb">DELIVERY FEE</td>
-                                        <td class="tf-detai tb2 tbr">Rs. <?php echo $delivery; ?> .00</td>
+                                        <td class="tf-detai tb2 tbr">Rs. <?php echo $delivery_fee; ?> .00</td>
                                     </tr>
                                     <tr>
                                         <td colspan="3"></td>
                                         <td class="tf-txt">GRAND TOTAL</td>
-                                        <td class="tf-detai tb2 tbr">Rs. <?php echo $t; ?> .00</td>
+                                        <td class="tf-detai tb2 tbr">Rs. <?php echo $sub_total + $delivery_fee; ?> .00</td>
                                     </tr>
                                 </tfoot>
                             </table>

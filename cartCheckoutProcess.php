@@ -13,9 +13,28 @@ $dotenv->load();
 
 if (isset($_SESSION["u"])) {
 
-    $cart_ids = $_GET["cart_ids"];
+    $cart_ids = explode(",", $_GET["cart_ids"]);
     $tcost = $_GET["tcost"];
     $umail = $_SESSION["u"]["email"];
+
+    foreach ($cart_ids as $cid) {
+        $cid = intval($cid);
+
+        $cart_rs = Database::search("SELECT * FROM `cart` WHERE `cart_id` = '" . $cid . "' AND `user_email` = '" . $umail . "'");
+        $cart_data = $cart_rs->fetch_assoc();
+
+        $product_rs = Database::search("SELECT * FROM `product` WHERE `id` = '" . $cart_data["product_id"] . "'");
+        $product_data = $product_rs->fetch_assoc();
+
+        if ($product_data["qty"] < $cart_data["qty"]) {
+            $error = [
+                "status" => "2",
+                "title" => $product_data["title"]
+            ];
+            echo json_encode($error);
+            return;
+        }
+    }
 
     $array;
 
@@ -73,7 +92,7 @@ if (isset($_SESSION["u"])) {
 
         echo json_encode($array);
     } else {
-        echo ("2");
+        echo ("3");
     }
 } else {
     echo ("1");

@@ -1460,6 +1460,23 @@ function payNow(id) {
         document.getElementById("waiting2").style.display = "none";
         swal({
           title: "Error",
+          text: "Invalid Product Quantity!",
+          icon: "error",
+          buttons: {
+            confirm: {
+              text: "OK",
+              value: true,
+              visible: true,
+              className: "swal-ok-button",
+              closeModal: true,
+            },
+          },
+          className: "custom-swal",
+        });
+      } else if (response == 3) {
+        document.getElementById("waiting2").style.display = "none";
+        swal({
+          title: "Error",
           text: "Please update your profile.",
           icon: "error",
           buttons: {
@@ -1583,7 +1600,24 @@ function checkout(cart_ids, tcost) {
         setTimeout(function () {
           window.location = "signup&signin.php";
         }, 1500);
-      } else if (response == 2) {
+      } else if (obj.status == "2") {
+        document.getElementById("waiting2").style.display = "none";
+        swal({
+          title: "Error",
+          text: "Invalid " + obj.title + " Product Quantity!",
+          icon: "error",
+          buttons: {
+            confirm: {
+              text: "OK",
+              value: true,
+              visible: true,
+              className: "swal-ok-button",
+              closeModal: true,
+            },
+          },
+          className: "custom-swal",
+        });
+      } else if (response == 3) {
         document.getElementById("waiting2").style.display = "none";
         swal({
           title: "Error",
@@ -1622,6 +1656,9 @@ function checkout(cart_ids, tcost) {
             className: "custom-swal",
           });
           document.getElementById("waiting2").style.display = "none";
+          setTimeout(function () {
+            saveCartInvoice(orderId, cart_ids, mail, amount);
+          }, 2000);
         };
 
         payhere.onDismissed = function onDismissed() {
@@ -1712,6 +1749,46 @@ function saveInvoice(orderId, id, mail, amount, qty) {
   };
 
   request.open("POST", "saveInvoiceProcess.php", true);
+  request.send(form);
+}
+
+// js for display and save invoice for buynow process in sigleProductView.php
+function saveCartInvoice(orderId, cart_ids, mail, amount) {
+  var form = new FormData();
+  form.append("o", orderId);
+  form.append("i", cart_ids);
+  form.append("m", mail);
+  form.append("a", amount);
+
+  var request = new XMLHttpRequest();
+
+  request.onreadystatechange = function () {
+    if (request.status == 200 && request.readyState == 4) {
+      var response = request.responseText;
+
+      if (response == "success") {
+        window.location = "invoice.php?id=" + orderId;
+      } else {
+        swal({
+          title: "Error",
+          text: response,
+          icon: "error",
+          buttons: {
+            confirm: {
+              text: "OK",
+              value: true,
+              visible: true,
+              className: "swal-ok-button",
+              closeModal: true,
+            },
+          },
+          className: "custom-swal",
+        });
+      }
+    }
+  };
+
+  request.open("POST", "saveCartInvoiceProcess.php", true);
   request.send(form);
 }
 

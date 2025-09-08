@@ -317,7 +317,6 @@ $cartPrId = array();
 
                                         <button class="checkout" id="payhere-payment" onclick='checkout(<?php echo $cart_id_array; ?>,<?php echo $tcost ?>);'>CHECKOUT</button>
 
-
                                     </div>
 
                                 </div>
