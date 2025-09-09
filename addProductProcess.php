@@ -55,7 +55,7 @@ if (empty($category)) {
     echo ("Please Enter Your Product Description.");
 } else if (strlen($desc) > 500) {
     echo ("Product Description Must Contain LOWER THAN 500 characters.");
-} else if (!preg_match('/^[A-Za-z0-9. ]+$/', $desc)) {
+} else if (!preg_match('/^[A-Za-z0-9., ]+$/', $desc)) {
     echo ("You can use only letters , numbers and full stop mark for your product description.");
 } else if ($length <= 3 && $length > 0) {
 
